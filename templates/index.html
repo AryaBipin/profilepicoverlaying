@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image cropping using cropper.js </title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropper/2.3.4/cropper.min.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" />
+</head>
+
+<body >    
+    {% for i in file_paths[1:6] -%}
+    <div style="text-align: right;"" width:20%;"" position:relative;" >
+    <img style="height:100px;" src="static\uploads\original\{{ i }}" /> 
+    <br>
+    <a href="static\uploads\original\{{ i }}" download="" >download</a>
+    <br>
+    {% endfor -%}
+    </div>
+    <div style="position: absolute; top:50px;    right:600px; ">
+    <div  class="container page " id="fg"  >
+        <h1 class="text-center" style="top:0px" >Select Profile Picture</h1>
+        <div class="form-group container" >
+            <div class="box "  >
+                <div class="options hide" >
+                </div>
+      <form id="frm" >       
+        <img src="static\uploads\profile\{{ file_list1[coun-1] }}"  style="position:relative; right:400px" />
+        <a href="static\uploads\profile\{{ file_list1[coun-1] }}" style="position:relative; right:400px" download="" >Export as PNG</a>    
+        <input type="file" name= "file" class="form-control box " autocomplete="off" required id="file-input" style="width:300px">     
+             
+                    <div class="box-2" >
+                        <div class="result" id="fgg">  
+                                                         
+                        </div>
+                    </div>
+
+                    <!--rightbox-->
+                    <div class="box-2 img-result hide" >
+                        <!-- result of crop -->          
+                        <div class="container2 ">
+                            <h3 style="position:absolute; right:120px; bottom:290px">Preview</h3>
+                            <div class="parent">
+                                
+                                <img class="cropped image" alt="" width="285" height="285" id="imgdid" style="border-radius:50%; " />
+                                <img class="image2" alt="" width="285" height="285"  style="border-radius:50%; " src="static\uploads\Adlogo2.png" />
+                              </div>             
+                             
+                           
+                        </div>
+
+                    </div>      
+                       <input value="Save" onClick="uploadImage(); validateFileType()" style="position:absolute; right:300px; bottom:180px; width:60px;" class="btn btn-info" id="bttn">                      
+                        <button class="btn save hide" id="cbtn" style="position:absolute; right:300px; bottom:220px; " >Crop</button>                        
+                    
+                </form>
+                
+            </div>
+        </div>
+      
+    </div>
+
+</div>
+ 
+</body>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/0.8.1/cropper.min.js" ></script>
+
+<style>
+    * {
+        box-sizing: border-box
+    }
+    /* Container needed to position the overlay. Adjust the width as needed */
+    
+    .container2 {
+        position: absolute;
+        top:400px;
+        right:0px;
+    }
+    /* Make the image to responsive */
+    
+    .image {
+        display: block;
+        width: 100%;
+        height: 100%;
+        position: relative;
+       
+    }
+    
+    .overlay {
+        position: absolute;
+        bottom: 0;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+    
+    .page {
+        margin: 1em auto;
+        max-width: 768px;
+        display: flex;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        height: 100%;
+    }
+    
+    .box {
+        padding: 0.5em;
+        width: 100%;
+        margin: 0.5em;
+    }
+    
+    .box-2 {
+        padding: 0.5em;
+        width: calc(100% / 2 - 1em);
+    }
+    
+    .options label,
+    .options input {
+        width: 4em;
+        padding: 0.5em 1em;
+    }
+
+    .cropper-view-box {
+        box-shadow: 0 0 0 1px #39f;
+        border-radius: 50%;
+        outline: 0;
+    }
+    .cropper-face {
+        background-color:inherit !important;
+    }
+    .cropper-view-box {
+        outline:inherit !important;
+    }
+    .btn {
+        background: white;
+        color: black;
+        border: 1px solid black;
+        padding: 0.5em 1em;
+        text-decoration: none;
+        margin: 0.8em 0.3em;
+        display: inline-block;
+        cursor: pointer;
+    }
+
+    
+    .hide {
+        display: none;
+    }
+    
+    img {
+        max-width: 100%;
+        
+           }
+    .parent {
+        position: relative;
+        top: 0;
+        left: 0;
+          }
+     .image1 {
+        position: relative;
+        top: 0;
+        left: 0;
+        border: 1px red solid;
+          }
+        .image2 {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top:0;
+        left:0;
+        border: 1px green solid;
+          }
+    
+    
+          
+</style>
+
+<script>
+    // vars
+    window.onload = function(){document.getElementById("bttn").style.display= "none"; };
+  
+    let result = document.querySelector(".result"),
+        img_result = document.querySelector(".img-result"),
+        img_w = document.querySelector(".img-w"),
+        img_h = document.querySelector(".img-h"),
+        options = document.querySelector(".options"),
+        save = document.querySelector(".save"),
+        cropped = document.querySelector(".cropped"),
+        dwn = document.querySelector(".download"),
+        upload = document.querySelector("#file-input"),
+        cropper = "",
+        frm = document.getElementById("frm");
+        cropperfile = document.querySelector("#cimage");;
+        croppedFile = null;
+        bttn = document.getElementById("bttn");
+        cbtn = document.getElementById("cbtn");
+        document. getElementById('fgg'). title='Scroll Wheel(ZoomIn/Zoomout)' 
+      
+
+
+ //Validation
+ function validateFileType() {
+    var inputElement = document.getElementById('file-input');
+    var files = inputElement.files;
+    if(files.length==0){
+        alert("Please choose a file first...");
+        return false;
+    }else{
+        while(cropped.src==""){
+            alert("please crop the file to upload");
+            /* file upload logic goes here... */
+            return false;
+            
+    
+    }
+}
+ }
+cbtn.addEventListener('click', () => {
+    bttn.style.display = "block";
+ })
+
+bttn.addEventListener('click', () => {
+  // 👇️ hide button
+  bttn.style.display = 'none';})
+
+    // on change show image with crop options
+    upload.addEventListener("change", (e) => {
+        if (e.target.files.length) {
+            // start file reader
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                if (e.target.result) {
+                    // create new image
+                    let img = document.createElement("img");
+                    img.id = "image";
+                    img.src = e.target.result;
+                    // clean result before
+                    result.innerHTML = "";
+                    // append new image
+                    result.appendChild(img);
+                    // show save btn and options
+                    save.classList.remove("hide");
+                    options.classList.remove("hide");
+                    // init cropper
+                    cropper = new Cropper(img, {
+                        aspectRatio: 1 / 1,
+                        cropBoxResizable: false,
+                        crop: function(e) {
+                            //console.log(e.detail.x);
+                            //console.log(e.detail.y);
+                            //console.log(event.detail.scaleX);
+                            //console.log(event.detail.scaleY);
+                        }
+                    });
+                }
+            };
+            reader.readAsDataURL(e.target.files[0]);
+        }
+    });
+   
+    function uploadImage() {
+        fetch(croppedFile)
+            .then(res => res.blob())
+            .then(blob => {
+                const fd = new FormData();
+                const file = new File([blob], "cfile");
+                fd.append('image',file)
+                fetch('/upload', {
+                        method: 'POST',
+                        body:  fd
+                        
+                        
+                    })
+                    .then(data => {
+                        window.location.reload();
+
+                    })
+                    .catch(err => {
+                        // Catch and display errors
+                    })
+                  
+                  
+            });
+                      
+    };
+    
+   
+    // save on click
+    save.addEventListener("click", (e) => {
+        debugger
+        e.preventDefault();
+        // get result to data uri
+        let imgSrc = cropper
+            .getCroppedCanvas({
+                width: 285, // input value
+            })
+            .toDataURL();
+        // remove hide class of img
+        document.getElementById("frm").onsubmit = function(){
+            location.reload(true);
+        }
+        cropped.classList.remove("hide");
+        img_result.classList.remove("hide");
+        image.classList.remove("hide")
+       
+     
+        
+        // show image cropped
+        cropped.src = imgSrc;
+        croppedFile = imgSrc;
+        
+
+
+        // croppedFile = dataURLtoFile(imgSrc, 'imgfile')
+        dwn.classList.remove("hide");
+    
+        dwn.download = "uploads\\image.jpg";
+        dwn.setAttribute("href", "profile.png" );      
+
+    });
+</script>
+
+</html>
